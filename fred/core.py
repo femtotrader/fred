@@ -21,13 +21,19 @@ except ImportError:
 class Fred(object):
     """An easy-to-use Python wrapper over the St. Louis FRED API."""
 
-    def __init__(self, api_key='', xml_output=False):
+    def __init__(self, api_key='', xml_output=False, session=None):
         if 'FRED_API_KEY' in os.environ:
             self.api_key = os.environ['FRED_API_KEY']
         else:
             self.api_key = api_key
+        self.session = self._init_session(session)
         self.xml = xml_output
         self.endpoint = 'https://api.stlouisfed.org/fred/'
+
+    def _init_session(self, session):
+        if session is None:
+            session = requests.Session()
+        return session
 
     def _create_path(self, *args):
         """Create the URL path with the Fred endpoint and given arguments."""
@@ -40,7 +46,7 @@ class Fred(object):
         location = args[0]
         params = self._get_keywords(location, kwargs)
         url = self._create_path(*args)
-        request = requests.get(url, params=params)
+        request = self.session.get(url, params=params)
         content = request.content
         self._request = request
         return self._output(content)
