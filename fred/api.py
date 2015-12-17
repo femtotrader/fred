@@ -28,7 +28,7 @@ def category(session=None, **kwargs):
 def categories(identifier, session=None, **kwargs):
     """Just in case someone misspells the method."""
     kwargs['category_id'] = identifier
-    return category(**kwargs, session=session)
+    return category(session=session, **kwargs)
 
 
 def children(category_id=None, session=None, **kwargs):
